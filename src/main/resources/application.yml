@@ -1,0 +1,8 @@
+spring:
+  application:
+    name: RedisLikeTest
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
