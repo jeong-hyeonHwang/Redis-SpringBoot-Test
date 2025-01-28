@@ -1,45 +1,79 @@
 package com.jhh.redisliketest.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.jhh.redisliketest.repository.UserSentenceLikeLogRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+
 @Service
+@RequiredArgsConstructor
 public class PostLikeService {
 
     private final RedisTemplate<String, Object> redisTemplate;
     private final ValueOperations<String, Object> valueOperations;
-
-    @Autowired
-    public PostLikeService(RedisTemplate<String, Object> redisTemplate, ValueOperations<String, Object> valueOperations) {
-        this.redisTemplate = redisTemplate;
-        this.valueOperations = valueOperations;
-    }
+    private final UserSentenceLikeLogRepository userSentenceLikeLogRepository;
 
     public void incrementPostLikeCount(String postId) {
         String key = "post:" + postId + ":likeCount";
+        Object likeCount = valueOperations.get(key);
+
+        if (likeCount == null) {
+            likeCount = userSentenceLikeLogRepository.countLikesByPostId(Integer.parseInt(postId));
+            if (likeCount == null) {
+                likeCount = 0;
+            }
+            valueOperations.set(key, likeCount, Duration.ofMinutes(30));
+        }
+
         valueOperations.increment(key, 1);
+        redisTemplate.expire(key, Duration.ofMinutes(30));
     }
 
     public void decrementPostLikeCount(String postId) {
         String key = "post:" + postId + ":likeCount";
+        Object likeCount = valueOperations.get(key);
+
+        if (likeCount == null) {
+            likeCount = userSentenceLikeLogRepository.countLikesByPostId(Integer.parseInt(postId));
+            if (likeCount == null) {
+                likeCount = 0;
+            }
+            valueOperations.set(key, likeCount, Duration.ofMinutes(30));
+        }
+
         valueOperations.increment(key, -1);
+        redisTemplate.expire(key, Duration.ofMinutes(30));
     }
 
-    public Long getPostLikeCount(String postId) {
+    public Integer getPostLikeCount(String postId) {
         String key = "post:" + postId + ":likeCount";
+
         Object count = valueOperations.get(key);
-        return count != null ? ( (Number) count).longValue() : 0L;
+
+        if (count == null) {
+            Integer parsedPostId = Integer.parseInt(postId);
+            Integer likeCount = userSentenceLikeLogRepository.countLikesByPostId(parsedPostId);
+            if (likeCount == null) {
+                likeCount = 0;
+            }
+            valueOperations.set(key, likeCount);
+            return likeCount;
+        }
+
+        return ( (Number) count).intValue();
     }
 
-    public void setPostLikeCount(String postId, Long count) {
-        String key = "post:" + postId + ":likeCount";
-        valueOperations.set(key, -1);
-    }
+//    public void setPostLikeCount(String postId, Long count) {
+//        String key = "post:" + postId + ":likeCount";
+//        valueOperations.set(key, count);
+//        redisTemplate.expire(key, Duration.ofMinutes(30));
+//    }
 
-    public void deletePostLikeCount(String postId) {
-        String key = "post:" + postId + ":likeCount";
-        redisTemplate.delete(key);
-    }
+//    public void deletePostLikeCount(String postId) {
+//        String key = "post:" + postId + ":likeCount";
+//        redisTemplate.delete(key);
+//    }
 }

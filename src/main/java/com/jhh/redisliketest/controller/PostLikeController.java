@@ -26,17 +26,17 @@ public class PostLikeController {
     }
 
     @GetMapping("/count")
-    public Long getLikeCount(@RequestParam String postId) {
+    public Integer getLikeCount(@RequestParam String postId) {
         return postLikeService.getPostLikeCount(postId);
     }
 
-    @PostMapping("/set-count")
-    public void setLikeCount(@RequestParam String postId, @RequestParam Long count) {
-        postLikeService.setPostLikeCount(postId, count);
-    }
+//    @PostMapping("/set-count")
+//    public void setLikeCount(@RequestParam String postId, @RequestParam Long count) {
+//        postLikeService.setPostLikeCount(postId, count);
+//    }
 
-    @DeleteMapping("/delete-count")
-    public void deleteLikeCount(@RequestParam String postId) {
-        postLikeService.deletePostLikeCount(postId);
-    }
+//    @DeleteMapping("/delete-count")
+//    public void deleteLikeCount(@RequestParam String postId) {
+//        postLikeService.deletePostLikeCount(postId);
+//    }
 }

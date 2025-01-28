@@ -24,9 +24,6 @@ public class DateSentence {
     @Column(name = "date_id")
     private LocalDateTime dateId;
 
-    @Column(name = "level", length = 2)
-    private String level;
-
     @OneToMany(mappedBy = "dateSentence", cascade = CascadeType.ALL, orphanRemoval = true)
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

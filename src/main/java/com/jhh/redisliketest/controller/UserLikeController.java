@@ -32,8 +32,8 @@ public class UserLikeController {
         return userLikeService.getAllLikesForUser(userId);
     }
 
-    @DeleteMapping("/remove-like")
-    public void removeUserLike(@RequestParam String userId, @RequestParam String postId) {
-        userLikeService.removeUserLike(userId, postId);
-    }
+//    @DeleteMapping("/remove-like")
+//    public void removeUserLike(@RequestParam String userId, @RequestParam String postId) {
+//        userLikeService.removeUserLike(userId, postId);
+//    }
 }
