@@ -1,4 +1,4 @@
-package com.jhh.redisliketest.service;
+package com.jhh.redisliketest.service.user;
 
 import com.jhh.redisliketest.entity.UserSentenceLikeLog;
 import com.jhh.redisliketest.repository.UserSentenceLikeLogRepository;
@@ -14,7 +14,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class UserLikeService {
 
-    private final RedisTemplate<String, Object> redisTemplate;
+    private final RedisTemplate<String, Boolean> redisTemplate;
     private final HashOperations<String, String, Boolean> hashOperations;
     private final UserSentenceLikeLogRepository userSentenceLikeLogRepository;
 
@@ -37,17 +37,17 @@ public class UserLikeService {
                     .findByUser_UserIdAndUserDateSentence_UserDateSentenceId(parsedUserId, parsedPostId);
             if(optionalLog.isPresent()) {
                 like = optionalLog.get().getLikeYn();
+            } else {
+                like = false; // 기본값 설정
             }
             hashOperations.put(key, postId, like);
-        } else {
-            like = false;
-            hashOperations.put(key, postId, like);
         }
-        return hashOperations.get(key, postId);
+
+        return like;
     }
 
     public Map<String, Boolean> getAllLikesForUser(String userId) {
-        String key = "user:" + userId + "likes";
+        String key = "user:" + userId + ":likes";
 
         Map<String, Boolean> likes = hashOperations.entries(key);
 
@@ -69,9 +69,4 @@ public class UserLikeService {
 
         return likes;
     }
-
-//    public void removeUserLike(String userId, String postId) {
-//        String key = "user:" + userId + ":likes";
-//        hashOperations.delete(key, postId);
-//    }
 }

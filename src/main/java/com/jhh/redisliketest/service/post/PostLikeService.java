@@ -1,4 +1,4 @@
-package com.jhh.redisliketest.service;
+package com.jhh.redisliketest.service.post;
 
 import com.jhh.redisliketest.repository.UserSentenceLikeLogRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,13 +12,13 @@ import java.time.Duration;
 @RequiredArgsConstructor
 public class PostLikeService {
 
-    private final RedisTemplate<String, Object> redisTemplate;
-    private final ValueOperations<String, Object> valueOperations;
+    private final RedisTemplate<String, Integer> redisTemplate;
+    private final ValueOperations<String, Integer> valueOperations;
     private final UserSentenceLikeLogRepository userSentenceLikeLogRepository;
 
     public void incrementPostLikeCount(String postId) {
         String key = "post:" + postId + ":likeCount";
-        Object likeCount = valueOperations.get(key);
+        Integer likeCount = valueOperations.get(key);
 
         if (likeCount == null) {
             likeCount = userSentenceLikeLogRepository.countLikesByPostId(Integer.parseInt(postId));
@@ -34,7 +34,7 @@ public class PostLikeService {
 
     public void decrementPostLikeCount(String postId) {
         String key = "post:" + postId + ":likeCount";
-        Object likeCount = valueOperations.get(key);
+        Integer likeCount = valueOperations.get(key);
 
         if (likeCount == null) {
             likeCount = userSentenceLikeLogRepository.countLikesByPostId(Integer.parseInt(postId));
@@ -51,7 +51,7 @@ public class PostLikeService {
     public Integer getPostLikeCount(String postId) {
         String key = "post:" + postId + ":likeCount";
 
-        Object count = valueOperations.get(key);
+        Integer count = valueOperations.get(key);
 
         if (count == null) {
             Integer parsedPostId = Integer.parseInt(postId);
@@ -63,17 +63,6 @@ public class PostLikeService {
             return likeCount;
         }
 
-        return ( (Number) count).intValue();
+        return count;
     }
-
-//    public void setPostLikeCount(String postId, Long count) {
-//        String key = "post:" + postId + ":likeCount";
-//        valueOperations.set(key, count);
-//        redisTemplate.expire(key, Duration.ofMinutes(30));
-//    }
-
-//    public void deletePostLikeCount(String postId) {
-//        String key = "post:" + postId + ":likeCount";
-//        redisTemplate.delete(key);
-//    }
 }
