@@ -12,13 +12,13 @@ import java.time.Duration;
 @RequiredArgsConstructor
 public class PostLikeService {
 
-    private final RedisTemplate<String, Integer> redisTemplate;
-    private final ValueOperations<String, Integer> valueOperations;
+    private final RedisTemplate<String, Object> redisTemplate;
+    private final ValueOperations<String, Object> valueOperations;
     private final UserSentenceLikeLogRepository userSentenceLikeLogRepository;
 
     public void incrementPostLikeCount(String postId) {
         String key = "post:" + postId + ":likeCount";
-        Integer likeCount = valueOperations.get(key);
+        Object likeCount = valueOperations.get(key);
 
         if (likeCount == null) {
             likeCount = userSentenceLikeLogRepository.countLikesByPostId(Integer.parseInt(postId));
@@ -34,7 +34,7 @@ public class PostLikeService {
 
     public void decrementPostLikeCount(String postId) {
         String key = "post:" + postId + ":likeCount";
-        Integer likeCount = valueOperations.get(key);
+        Object likeCount = valueOperations.get(key);
 
         if (likeCount == null) {
             likeCount = userSentenceLikeLogRepository.countLikesByPostId(Integer.parseInt(postId));
@@ -51,7 +51,7 @@ public class PostLikeService {
     public Integer getPostLikeCount(String postId) {
         String key = "post:" + postId + ":likeCount";
 
-        Integer count = valueOperations.get(key);
+        Object count = valueOperations.get(key);
 
         if (count == null) {
             Integer parsedPostId = Integer.parseInt(postId);
@@ -63,6 +63,6 @@ public class PostLikeService {
             return likeCount;
         }
 
-        return count;
+        return ((Number) count).intValue();
     }
 }

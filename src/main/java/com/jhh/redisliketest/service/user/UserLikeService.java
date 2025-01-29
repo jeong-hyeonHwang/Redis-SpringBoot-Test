@@ -14,7 +14,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class UserLikeService {
 
-    private final RedisTemplate<String, Boolean> redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
     private final HashOperations<String, String, Boolean> hashOperations;
     private final UserSentenceLikeLogRepository userSentenceLikeLogRepository;
 
